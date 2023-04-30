@@ -1,13 +1,37 @@
+# Biblioteki
 import tkinter as tk
 import mysql.connector
 from cryptography.fernet import Fernet
+import os
 
-# create the main window
+# OKNO------------------------------------------------------------------------------
+# Deklaracja głównego okna
 window = tk.Tk()
 
+# Tytuł okna
+window.title("Simple Passowrd Manager")
+
+# Rozmiar Okna
+window.geometry("400x300")
+# ----------------------------------------------------------------------------------
+
+
+# KLUCZ-------------------------------------------------------------------------------
+# Wygenerowanie kodu do zaszyfrowania, tworzenie nowej sesji z tym kluczem
+key = Fernet.generate_key()
+fernet = Fernet(key)
+# -----------------------------------------------------------------------------------
+
+
+# POŁĄCZENIE---------------------------------------------------------------------------
+# Deklaracja połączenia do bazy danych, i kursora do zapytań dla bazy
 cursor = None
 conn = None
+# ---------------------------------------------------------------------------------------
 
+
+# FUNKCJE -------------------------------------------------------------------------------
+# Połączenie do bazy
 def connect():
     global cursor, conn
     try:
@@ -23,6 +47,7 @@ def connect():
     except mysql.connector.Error as e:
         print(f"Error: {e}")
 
+# Rozłączenie z bazą
 def disconnect():
     global cursor, conn
     try:
@@ -32,29 +57,31 @@ def disconnect():
     except mysql.connector.Error as e:
         print(f"Error: {e}")
 
+# Dodawanie danych do bazy
 def addTest():
     global cursor, conn
-    key = Fernet.generate_key()
-    fernet = Fernet(key)
     
     if conn is None:
         print("Connect to the database first!")
     else:
         inp1 = input("Type your login: ").encode()
         inp2 = input("Type your password: ").encode()
+        
         encrypted_login = fernet.encrypt(inp1)
         encrypted_pass = fernet.encrypt(inp2)
 
-        query = f"INSERT INTO `passes` (`Login`, `Password`) VALUES ('{encrypted_login.decode()}', '{encrypted_pass.decode()}')"
-    
+        query = f"INSERT INTO `passes` (`Login`, `Password`) VALUES (%s, %s)"
+        values = (encrypted_login, encrypted_pass)
 
-    try:
-        cursor.execute(query)
-        conn.commit()
-        print("Data added")
-    except mysql.connector.Error as e:
-        print(f"Error: {e}")
+        try:
+            cursor.execute(query, values)
+            conn.commit()
+            print("Data added")
+        except mysql.connector.Error as e:
+            print(f"Error: {e}")
 
+
+# Usuwanie wszystkich danych z bazy
 def deleteTest():
     global cursor, conn
     query = "DELETE FROM `passes`"
@@ -65,31 +92,24 @@ def deleteTest():
     except mysql.connector.Error as e:
         print(f"Error: {e}")
 
+# Wyświetlanie wszystkich danych w bazie
 def showAll():
     global cursor, conn
-    
-    try:
-        key = Fernet.generate_key()
-        fernet = Fernet(key)
-    except KeyError as e:
-        print(f"Error: {e}")
 
     query = "SELECT * from `passes`"
     try:
         cursor.execute(query)
         rows = cursor.fetchall()
         for row in rows:
-            print(fernet.decrypt(row[0]), fernet.decrypt(row[1]), "\n")
+            decrypted_login = fernet.decrypt(row[0]).decode()
+            decrypted_pass = fernet.decrypt(row[1]).decode()
+            print(decrypted_login, decrypted_pass, "\n")
     except mysql.connector.Error as e:
         print(f"Error: {e}")
+# ---------------------------------------------------------------------------------
 
-# set the window title
-window.title("Simple Passowrd Manager")
 
-# set the window size
-window.geometry("400x300")
-
-# create a button
+# Przyciski, muszą być pod funkcjami-----------------------------------------------------
 button1 = tk.Button(window, text="Connect to Database", command=connect)
 button1.pack()
 button2 = tk.Button(window,text="Disconnect from Database", command=disconnect)
@@ -100,6 +120,7 @@ button4 = tk.Button(window, text="Delete test data", command=deleteTest)
 button4.pack()
 button5 = tk.Button(window, text="Show data", command=showAll)
 button5.pack()
+# -------------------------------------------------------------------------------------------
 
-# start the GUI event loop
+# Uruchomienie okna
 window.mainloop()
