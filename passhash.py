@@ -64,13 +64,16 @@ def addTest():
     if conn is None:
         print("Connect to the database first!")
     else:
-        inp1 = input("Type your login: ").encode()
-        inp2 = input("Type your password: ").encode()
+        inp1 = input("Type your login: ")
+        inp2 = input("Type your password: ")
+
+        inp1 = inp1.encode()
+        inp2 = inp2.encode()
         
         encrypted_login = fernet.encrypt(inp1)
         encrypted_pass = fernet.encrypt(inp2)
 
-        query = f"INSERT INTO `passes` (`Login`, `Password`) VALUES (%s, %s)"
+        query = "INSERT INTO `passes` (`Login`, `Password`) VALUES (%s, %s)"
         values = (encrypted_login, encrypted_pass)
 
         try:
@@ -106,6 +109,7 @@ def showAll():
             print(decrypted_login, decrypted_pass, "\n")
     except mysql.connector.Error as e:
         print(f"Error: {e}")
+
 # ---------------------------------------------------------------------------------
 
 
