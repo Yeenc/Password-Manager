@@ -20,6 +20,11 @@ window.geometry("400x300")
 # Wygenerowanie kodu do zaszyfrowania, tworzenie nowej sesji z tym kluczem
 key = Fernet.generate_key()
 fernet = Fernet(key)
+
+# Musiałem zmienić strukturę tabel w MySQL aby móc odszyfrować dane
+# ALTER TABLE passes MODIFY Login BLOB;
+# ALTER TABLE passes MODIFY Password BLOB;
+# Typ BLOB nie dodaje żadnych znaczników do danych w przeciwieństwie do VARBINARY...
 # -----------------------------------------------------------------------------------
 
 
