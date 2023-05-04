@@ -13,6 +13,25 @@ window.title("Simple Passowrd Manager")
 
 # Rozmiar Okna
 window.geometry("400x300")
+
+canvas = tk.Canvas(window, width=400, height=400)
+canvas.pack()
+
+x1, y1 = 50, 50
+x2, y2 = 150, 150
+radius = 10
+
+# draw the arcs
+canvas.create_arc(x1, y1, x1+2*radius, y1+2*radius, start=90, extent=90, style="arc")
+canvas.create_arc(x2-2*radius, y1, x2, y1+2*radius, start=0, extent=90, style="arc")
+canvas.create_arc(x2-2*radius, y2-2*radius, x2, y2, start=270, extent=90, style="arc")
+canvas.create_arc(x1, y2-2*radius, x1+2*radius, y2, start=180, extent=90, style="arc")
+
+# draw the lines
+canvas.create_line(x1+radius, y1, x2-radius, y1)
+canvas.create_line(x2, y1+radius, x2, y2-radius)
+canvas.create_line(x1+radius, y2, x2-radius, y2)
+canvas.create_line(x1, y1+radius, x1, y2-radius)
 # ----------------------------------------------------------------------------------
 
 
@@ -119,16 +138,16 @@ def showAll():
 
 
 # Przyciski, muszą być pod funkcjami-----------------------------------------------------
-button1 = tk.Button(window, text="Connect to Database", command=connect)
-button1.pack()
-button2 = tk.Button(window,text="Disconnect from Database", command=disconnect)
-button2.pack()
-button3 = tk.Button(window, text="Add test Values", command=addTest)
-button3.pack()
-button4 = tk.Button(window, text="Delete test data", command=deleteTest)
-button4.pack()
-button5 = tk.Button(window, text="Show data", command=showAll)
-button5.pack()
+# button1 = tk.Button(window, text="Connect to Database", command=connect)
+# button1.pack()
+# button2 = tk.Button(window,text="Disconnect from Database", command=disconnect)
+# button2.pack()
+# button3 = tk.Button(window, text="Add test Values", command=addTest)
+# button3.pack()
+# button4 = tk.Button(window, text="Delete test data", command=deleteTest)
+# button4.pack()
+# button5 = tk.Button(window, text="Show data", command=showAll)
+# button5.pack()
 # -------------------------------------------------------------------------------------------
 
 # Uruchomienie okna
